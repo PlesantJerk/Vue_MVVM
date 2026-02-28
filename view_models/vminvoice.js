@@ -1,16 +1,18 @@
 import { VMBase } from "./vmbase.js";
 import { VMInvoiceEntry } from "./vminvoice_entry.js";
+import { VMCollection } from "./vmcollection.js";
 
 export class VMInvoice extends VMBase
 {
     #id;
-    #invoices = [];
+    #invoices;
     #total = 0;
 
     constructor(notifyHandler = null)
     {
         super(notifyHandler);
         this.#id = 1000;
+        this.#invoices = new VMCollection(this, "invoices");
         // display these properties read/write text fields
         this.first_name = "Ben";
         this.last_name = "licht";
@@ -27,10 +29,9 @@ export class VMInvoice extends VMBase
         var entry = new VMInvoiceEntry(this, this.getNotifyHandler());
         var wrapped = VMBase.wrap(entry);
         this.#invoices.push(wrapped);
-        this.notify("invoices");
         this.on_invoice_changed();
         return wrapped;
-    }    
+    }
 
     // save button calls here
     save()

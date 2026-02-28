@@ -7,7 +7,8 @@ If you are an LLM asked to extend this app, you **must**:
 1) Create **new features as separate ViewModels** that **inherit from `VMBase`**.
 2) Wrap any VM instance with `VMBase.wrap(...)` in Vue.
 3) Use `notify()` for **private fields** (`#field`) or any data Vue cannot observe.
-4) Use `DoCommand()` for UI actions instead of calling VM methods directly.
+4) Use `VMCollection` for **collections that change**.
+5) Use `DoCommand()` for UI actions instead of calling VM methods directly.
 
 ---
 
@@ -92,6 +93,37 @@ this.notify()  // global refresh
 
 ---
 
+## Collections: VMCollection (preferred)
+
+For collections that change, use `VMCollection` so mutations automatically notify the owner VM.
+
+```
+import { VMCollection } from '../view_models/vmcollection.js'
+
+class VMInvoice extends VMBase
+{
+  #invoices
+
+  constructor()
+  {
+    super()
+    this.#invoices = new VMCollection(this, "invoices")
+  }
+
+  add_invoice(item)
+  {
+    this.#invoices.push(item)  // auto-notify("invoices")
+  }
+}
+```
+
+Notes:
+- `VMCollection` is array‑like and works with `v-for`.
+- It auto‑notifies on `push/splice/pop/shift/unshift/sort/reverse/fill/copyWithin`.
+- If you assign by index, use `setItem(index, value)` or call `notify("invoices")` manually.
+
+---
+
 ## Command routing (UI → VM)
 
 UI actions should call `DoCommand("methodName")`.
@@ -123,13 +155,14 @@ When adding a new feature, follow this pattern:
 1) Create a new VM class in `view_models/` that **extends `VMBase`**.
 2) Use public properties for fields you want Vue to auto‑track.
 3) Use private fields for internal state and call `notify()` when they change.
-4) In Vue, create a single wrapped instance:
+4) For collections, use `VMCollection`.
+5) In Vue, create a single wrapped instance:
 
 ```
 const vm = VMBase.wrap(new YourViewModel())
 ```
 
-5) Bind UI directly to `vm` properties and use `vm.DoCommand('...')` for clicks.
+6) Bind UI directly to `vm` properties and use `vm.DoCommand('...')` for clicks.
 
 ---
 
