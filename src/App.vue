@@ -12,6 +12,7 @@ const vm = VMBase.wrap(new VMInvoice())
     <section class="card">
       <h2>Customer</h2>
       <div class="grid">
+        <label>Invoice # {{ vm.id }}</label>
         <label>First Name <input v-model="vm.first_name" /></label>
         <label>Last Name <input v-model="vm.last_name" /></label>
         <label>Company <input v-model="vm.company" /></label>
@@ -34,7 +35,8 @@ const vm = VMBase.wrap(new VMInvoice())
             <th>#</th>
             <th>Description</th>
             <th>Quantity</th>
-            <th>Amount</th>
+            <th>Unit Cost</th>
+            <th>Total Due</th>
           </tr>
         </thead>
         <tbody>
@@ -55,6 +57,7 @@ const vm = VMBase.wrap(new VMInvoice())
                 v-model.number="item.amount"
               />
             </td>
+            <td>{{ item.total.toFixed(2) }}</td>
           </tr>
         </tbody>
       </table>
@@ -143,3 +146,4 @@ button {
   color: white;
 }
 </style>
+

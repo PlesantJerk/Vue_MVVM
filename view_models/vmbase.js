@@ -219,4 +219,10 @@ export class VMBase
     {
         // default: do nothing
     }
+
+    toNumber(val)
+    {
+        const num = Number(val);
+        return Number.isFinite(num) ? num : 0;
+    }
 }

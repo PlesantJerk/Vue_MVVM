@@ -45,7 +45,7 @@ export class VMInvoice extends VMBase
         this.#total = 0;
         for (var i = 0; i < this.#invoices.length; i++)
         {
-            this.#total += this.#invoices[i].amount;
+            this.#total += this.#invoices[i].total;
         }
         this.notify("invoice_total");   
     }

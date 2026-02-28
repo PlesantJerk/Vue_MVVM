@@ -6,6 +6,8 @@ export class VMInvoiceEntry extends VMBase
     #invioce_id = 0;
     #amount = 100;
     #owner = null;
+    #quantity = 1;  
+    total = 0;
     constructor(owner, notifyHandler = null)
     {   
         super(notifyHandler);
@@ -14,8 +16,8 @@ export class VMInvoiceEntry extends VMBase
         this.#amount = 100;
 
         // display read/write text fields for these
-        this.description = "Web Hosting";
-        this.quantity = 1;  
+        this.description = "Web Hosting";    
+        this.#update_total();    
     }
 
     // display readonly as "item number"
@@ -24,6 +26,26 @@ export class VMInvoiceEntry extends VMBase
         return this.#invioce_id;
     }
 
+    get quantity()
+    {
+        return this.#quantity;
+    }
+
+    #update_total()
+    {
+        this.total = this.#quantity * this.#amount;
+        this.notify("total");
+        this.#owner.on_invoice_changed();
+    }
+
+    set quantity(val)
+    {        
+        this.#quantity = super.toNumber(val);
+        this.#update_total();
+        this.notify("quantity");
+    }
+
+
     get amount()
     {
         return this.#amount;
@@ -31,15 +53,8 @@ export class VMInvoiceEntry extends VMBase
 
     set amount(val)
     {
-        const num = Number(val);
-        this.#amount = Number.isFinite(num) ? num : 0;
-        if (this.#owner)
-        {
-            this.#owner.on_invoice_changed();
-        }
-        else
-        {
-            this.notify("amount");
-        }
+        this.#amount = super.toNumber(val);
+        this.#update_total();
+        this.notify("amount");
     }
 }
