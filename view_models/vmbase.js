@@ -34,6 +34,53 @@ function isTrackableProp(prop)
     return (typeof prop === "string" && !prop.startsWith("__"));
 }
 
+export class WaitHandle
+{
+  #promise = null
+  #trigger = null;
+  #name = "";
+  #emitter = new Map();
+
+  constructor(sName) 
+  {
+    this.#name = sName.toLowerCase();
+    this.#promise = new Promise((resolve) => 
+      {
+      this.#trigger = resolve;
+    });
+  }
+
+  #getHandleForName(sName)
+  {
+    let ret = this.#emitter.get(sName.toLowerCase());
+    if (!ret)
+    {
+      ret = new WaitHandle(sName);
+      this.#emitter.set(sName.toLowerCase(), ret);
+    }
+    return ret;
+  }
+
+  async waitForEvent(sName)
+  {
+    let waitHandle = this.getHandleForName(sName);
+    await waitHandle.wait();
+  }
+
+  setEvent(sName)
+  {
+    let waitHandle = this.getHandleForName(sName);
+    waitHandle.set();
+  }
+
+  get name() { return this.#name;  }
+
+  async wait() { return this.#promise; }
+
+  set() { this.#trigger(); }
+}
+
+
 export class VMBase
 {
     #notifyHandler = null;
