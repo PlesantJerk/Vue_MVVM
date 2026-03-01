@@ -1,4 +1,5 @@
 import { ref } from "vue";
+import { WaitHandle } from "./waithandle.js";
 
 const _metaMap = new WeakMap();
 
@@ -32,31 +33,6 @@ function ensurePropRef(meta, prop)
 function isTrackableProp(prop)
 {
     return (typeof prop === "string" && !prop.startsWith("__"));
-}
-
-export class WaitHandle
-{
-  #promise = null
-  #trigger = null;
-  #name = "";
-  
-
-  constructor(sName) 
-  {
-    this.#name = sName.toLowerCase();
-    this.#promise = new Promise((resolve) => 
-      {
-      this.#trigger = resolve;
-    });
-  }
-
-  
-
-  get name() { return this.#name;  }
-
-  async wait() { return this.#promise; }
-
-  set() { this.#trigger(); }
 }
 
 
