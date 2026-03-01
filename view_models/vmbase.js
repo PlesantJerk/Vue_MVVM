@@ -39,7 +39,7 @@ export class WaitHandle
   #promise = null
   #trigger = null;
   #name = "";
-  #emitter = new Map();
+  
 
   constructor(sName) 
   {
@@ -50,28 +50,7 @@ export class WaitHandle
     });
   }
 
-  #getHandleForName(sName)
-  {
-    let ret = this.#emitter.get(sName.toLowerCase());
-    if (!ret)
-    {
-      ret = new WaitHandle(sName);
-      this.#emitter.set(sName.toLowerCase(), ret);
-    }
-    return ret;
-  }
-
-  async waitForEvent(sName)
-  {
-    let waitHandle = this.getHandleForName(sName);
-    await waitHandle.wait();
-  }
-
-  setEvent(sName)
-  {
-    let waitHandle = this.getHandleForName(sName);
-    waitHandle.set();
-  }
+  
 
   get name() { return this.#name;  }
 
@@ -84,6 +63,7 @@ export class WaitHandle
 export class VMBase
 {
     #notifyHandler = null;
+    #emitter = new Map();
 
     // notifyHandler: function(propertyNameOrNamesOrNull) { ... }
     // - string: single property name
@@ -102,6 +82,29 @@ export class VMBase
     getNotifyHandler()
     {
         return this.#notifyHandler;
+    }
+
+    #getHandleForName(sName)
+    {
+        let ret = this.#emitter.get(sName.toLowerCase());
+        if (!ret)
+        {
+        ret = new WaitHandle(sName);
+        this.#emitter.set(sName.toLowerCase(), ret);
+        }
+        return ret;
+    }
+
+    async waitForEvent(sName)
+    {
+        let waitHandle = this.#getHandleForName(sName);
+        await waitHandle.wait();
+    }
+
+    setEvent(sName)
+    {
+        let waitHandle = this.#getHandleForName(sName);
+        waitHandle.set();
     }
 
     static wrap(target)
