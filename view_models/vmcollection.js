@@ -2,7 +2,7 @@ export class VMCollection extends Array
 {
     #notify = null;
     #propertyName = null;
-
+    #lookup = new Map();
     // ownerOrNotify: VMBase instance (with notify) OR a function
     // propertyName: property name on the owner to notify
     // initial items can be passed after propertyName
@@ -11,6 +11,7 @@ export class VMCollection extends Array
         super(...initialItems);
         this.#propertyName = propertyName;
         this.setNotifyHandler(ownerOrNotify, propertyName);
+        this.#lookup = new Map();
     }
 
     static get [Symbol.species]()
@@ -45,10 +46,30 @@ export class VMCollection extends Array
         }
     }
 
-    // WPF-style helpers
-    add(item)
+    getAllKeys()
     {
+        return this.#lookup.keys((key)=>key);
+    }
+
+    // WPF-style helpers
+    add(key, item)
+    {
+        this.#lookup.set(key, item);
         return this.push(item);
+    }
+
+    addItem(item)
+    {
+        if (item.key)
+        {
+            this.#lookup.set(item.key, item);
+        }
+        return this.push(item);
+    }
+
+    get(key)
+    {
+        return this.#lookup.get(key);
     }
 
     insert(index, item)
@@ -63,12 +84,16 @@ export class VMCollection extends Array
         {
             return null;
         }
+        if (this[index].key)
+            this.#lookup.delete(this[index].key);
         const removed = this.splice(index, 1);
         return removed.length ? removed[0] : null;
     }
 
-    remove(item)
+    remove(key)
     {
+        var item = this.#lookup.get(key);
+        this.#lookup.delete(key);
         const index = this.indexOf(item);
         if (index >= 0)
         {
@@ -82,10 +107,12 @@ export class VMCollection extends Array
     {
         if (this.length > 0)
         {
+            this.#lookup.clear();
             this.length = 0;
             this.notify();
         }
     }
+
 
     setItem(index, item)
     {
