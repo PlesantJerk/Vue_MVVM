@@ -23,7 +23,7 @@ export class VMDialog extends VMBase
 
     cancel()
     {
-        if (this.canPressCancel())
+        if (this.canPressCancel)
         {
             this.#didCancel = true;
             this.setEvent(this.#EVT_CLOSE);
@@ -32,7 +32,7 @@ export class VMDialog extends VMBase
 
     ok()
     {
-        if (this.canPressOk())
+        if (this.canPressOk)
         {
             this.#didCancel = false;
             this.setEvent(this.#EVT_CLOSE);

@@ -27,7 +27,7 @@ function ensurePropRef(meta, prop)
         r = ref(0);
         meta.props.set(prop, r);
     }
-    return r;
+    return r; 
 }
 
 function isTrackableProp(prop)
@@ -40,6 +40,7 @@ export class VMBase
 {
     #notifyHandler = null;
     #emitter = new Map();
+    #wrapped = null;
 
     // notifyHandler: function(propertyNameOrNamesOrNull) { ... }
     // - string: single property name
@@ -65,8 +66,8 @@ export class VMBase
         let ret = this.#emitter.get(sName.toLowerCase());
         if (!ret)
         {
-        ret = new WaitHandle(sName);
-        this.#emitter.set(sName.toLowerCase(), ret);
+            ret = new WaitHandle(sName);
+            this.#emitter.set(sName.toLowerCase(), ret);
         }
         return ret;
     }
@@ -83,7 +84,21 @@ export class VMBase
         waitHandle.set();
     }
 
+    get wrapped()
+    {
+        if (this.#wrapped === null)
+        {
+            this.#wrapped = VMBase.#wrap_internal(this);
+        }
+        return this.#wrapped;
+    }
+
     static wrap(target)
+    {
+        return target.wrapped;
+    }
+
+    static #wrap_internal(target)
     {
         if (target === null || typeof target !== "object")
         {
