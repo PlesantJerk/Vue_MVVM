@@ -1,3 +1,5 @@
+NOTE: You should also read this url: https://github.com/PlesantJerk/Vue_MVVM/blob/master/README.md
+
 # LLM Guide: Vue MVVM Pattern (VMBase)
 
 This project uses a **WPF‑style MVVM pattern** in Vue. The goal is to keep ViewModel (VM) logic **framework‑agnostic** and minimize Vue‑specific code inside templates/components.
