@@ -1,5 +1,6 @@
 export class VMCollection extends Array
 {
+    autoWrapVM = true;
     #notify = null;
     #propertyName = null;
     #lookup = new Map();
@@ -54,17 +55,19 @@ export class VMCollection extends Array
     // WPF-style helpers
     add(key, item)
     {
-        this.#lookup.set(key, item);
-        return this.push(item);
+        var proxy = this.autoWrapVM ? item.wrapped : item;
+        this.#lookup.set(key, proxy);
+        return this.push(proxy);
     }
 
     addItem(item)
     {
+        var proxy = this.autoWrapVM ? item.wrapped : item;
         if (item.key)
         {
-            this.#lookup.set(item.key, item);
+            this.#lookup.set(item.key, proxy);
         }
-        return this.push(item);
+        return this.push(proxy);
     }
 
     get(key)
@@ -74,7 +77,8 @@ export class VMCollection extends Array
 
     insert(index, item)
     {
-        this.splice(index, 0, item);
+        var proxy = this.autoWrapVM ? item.wrapped : item;
+        this.splice(index, 0, proxy);
         return this.length;
     }
 
@@ -116,7 +120,8 @@ export class VMCollection extends Array
 
     setItem(index, item)
     {
-        this[index] = item;
+        var proxy = this.autoWrapVM ? item.wrapped : item;
+        this[index] = proxy;
         this.notify();
     }
 
