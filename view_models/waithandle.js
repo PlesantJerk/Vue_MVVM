@@ -1,4 +1,4 @@
-export default class WaitHandle
+export class WaitHandle
 {
   #promise = null
   #trigger = null;
